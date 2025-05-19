@@ -12,13 +12,14 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8fafc;
+            padding-top: 58px; /* Accounts for fixed navbar height */
         }
         
         .hero {
             background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3');
             background-size: cover;
             background-position: center;
-            height: 300px;
+            height: 400px;
         }
         
         .expense-card {
@@ -45,11 +46,21 @@
         
         .navbar {
             transition: all 0.3s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
         }
         
         .navbar.scrolled {
             background-color: rgba(255, 255, 255, 0.95);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Add padding to sections to ensure content doesn't overlap with navbar */
+        section {
+            padding-top: 20px; /* Extra padding to ensure section content starts below the navbar */
         }
     </style>
 </head>
@@ -62,7 +73,7 @@
                     <i class="fas fa-plane text-blue-600 text-2xl mr-2"></i>
                     <span class="text-xl font-bold text-blue-600">Vacation Budget</span>
                 </div>
-                <div class="hidden md:flex space-x-8">
+                <div class="hidden md:flex space-x-12">
                     <a href="#" class="text-blue-600 font-medium hover:text-blue-800 transition">Home</a>
                     <a href="#budget-summary" class="text-gray-700 hover:text-blue-600 transition">Budget</a>
                     <a href="#add-expense" class="text-gray-700 hover:text-blue-600 transition">Add Expense</a>
@@ -76,7 +87,7 @@
     </nav>
 
     <!-- Header with scenic background -->
-    <header class="hero flex items-center justify-center text-white mt-16">
+    <header class="hero flex items-center justify-center text-white">
         <div class="text-center px-4">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Vacation Budget Tracker</h1>
             <p class="text-xl md:text-2xl">Plan your dream trip without breaking the bank</p>
@@ -364,7 +375,7 @@
                 </div>
             </div>
             <div class="mt-8 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
-                <p>© 2025 Vacation Budget Tracker. All rights reserved.</p>
+                <p>© 2023 Vacation Budget Tracker. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -381,6 +392,7 @@
         const expenseList = document.getElementById('expense-list');
         const noExpensesRow = document.getElementById('no-expenses');
         const navbar = document.querySelector('.navbar');
+        const navLinks = document.querySelectorAll('.navbar a'); // Select all navbar links
         
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
@@ -402,6 +414,15 @@
             setBudgetBtn.addEventListener('click', setBudget);
             addExpenseBtn.addEventListener('click', addExpense);
             
+            // Add click event listeners to navbar links for smooth scrolling
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1); // Get the section ID
+                    scrollToSection(targetId);
+                });
+            });
+            
             // Navbar scroll effect
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
@@ -411,6 +432,20 @@
                 }
             });
         });
+        
+        // Function to scroll to a section with offset for the navbar
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const navbarHeight = navbar.offsetHeight; // Get navbar height
+                const sectionTop = section.getBoundingClientRect().top + window.pageYOffset; // Get section's top position
+                const bodyPaddingTop = parseFloat(getComputedStyle(document.body).paddingTop); // Get body padding-top (80px)
+                window.scrollTo({
+                    top: sectionTop - navbarHeight - bodyPaddingTop + 70, // Adjust for navbar height and body padding
+                    behavior: 'smooth'
+                });
+            }
+        }
         
         // Set the total budget and trip duration
         function setBudget() {
@@ -433,6 +468,9 @@
             
             // Show success message
             showToast('Budget set successfully!', 'success');
+            
+            // Scroll to budget summary section
+            scrollToSection('budget-summary');
         }
         
         // Add a new expense
@@ -487,6 +525,9 @@
             
             // Show success message
             showToast('Expense added successfully!', 'success');
+            
+            // Scroll to the expense breakdown section after adding an expense
+            scrollToSection('expense-breakdown');
         }
         
         // Delete an expense
