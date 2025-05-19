@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacation Budget Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .hero {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+        }
+        
+        .expense-card {
+            transition: all 0.3s ease;
+        }
+        
+        .expense-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .navbar {
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar fixed w-full z-10 bg-white md:bg-transparent">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <i class="fas fa-plane text-blue-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-blue-600">Vacation Budget</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-blue-600 font-medium hover:text-blue-800 transition">Home</a>
+                    <a href="#budget-summary" class="text-gray-700 hover:text-blue-600 transition">Budget</a>
+                    <a href="#add-expense" class="text-gray-700 hover:text-blue-600 transition">Add Expense</a>
+                    <a href="#expense-breakdown" class="text-gray-700 hover:text-blue-600 transition">Breakdown</a>
+                </div>
+                <button class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header with scenic background -->
+    <header class="hero flex items-center justify-center text-white mt-16">
+        <div class="text-center px-4">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Vacation Budget Tracker</h1>
+            <p class="text-xl md:text-2xl">Plan your dream trip without breaking the bank</p>
+        </div>
+    </header>
+
+    <!-- Main content container -->
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Budget summary section -->
+        <section id="budget-summary" class="mb-12 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-800 flex items-center">
+                <i class="fas fa-chart-pie mr-3"></i> Your Budget Summary
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Total budget card -->
+                <div class="bg-white p-6 rounded-lg shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-wallet text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Total Budget</h3>
+                    </div>
+                    <div class="flex items-end">
+                        <p class="text-3xl font-bold text-blue-600 mr-2">₹<span id="total-budget">0</span></p>
+                        <p class="text-gray-500 mb-1">for your trip</p>
+                    </div>
+                </div>
+                
+                <!-- Total spent card -->
+                <div class="bg-white p-6 rounded-lg shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-red-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-money-bill-wave text-red-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Total Spent</h3>
+                    </div>
+                    <div class="flex items-end">
+                        <p class="text-3xl font-bold text-red-600 mr-2">₹<span id="total-spent">0</span></p>
+                        <p class="text-gray-500 mb-1">so far</p>
+                    </div>
+                </div>
+                
+                <!-- Remaining budget card -->
+                <div class="bg-white p-6 rounded-lg shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-green-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-piggy-bank text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Remaining</h3>
+                    </div>
+                    <div class="flex items-end">
+                        <p class="text-3xl font-bold text-green-600 mr-2">₹<span id="remaining-budget">0</span></p>
+                        <p class="text-gray-500 mb-1">left to spend</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Budget progress bar -->
+            <div class="mt-8">
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Budget Usage</span>
+                    <span class="text-sm font-medium text-gray-700"><span id="budget-percentage">0</span>%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div id="budget-progress" class="progress-bar h-4 rounded-full bg-gradient-to-r from-blue-500 to-green-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Budget setup form -->
+        <section class="mb-12 bg-white rounded-xl p-6 shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-800 flex items-center">
+                <i class="fas fa-sliders-h mr-3"></i> Set Your Budget
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="trip-budget" class="block text-sm font-medium text-gray-700 mb-2">Total Trip Budget (₹)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-rupee-sign text-gray-400"></i>
+                        </div>
+                        <input type="number" id="trip-budget" class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border" placeholder="50000">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="trip-duration" class="block text-sm font-medium text-gray-700 mb-2">Trip Duration (days)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="far fa-calendar-alt text-gray-400"></i>
+                        </div>
+                        <input type="number" id="trip-duration" class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border" placeholder="7">
+                    </div>
+                </div>
+            </div>
+            
+            <button id="set-budget-btn" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center">
+                <i class="fas fa-check-circle mr-2"></i> Set Budget
+            </button>
+        </section>
+        
+        <!-- Add expense form -->
+        <section id="add-expense" class="mb-12 bg-white rounded-xl p-6 shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-800 flex items-center">
+                <i class="fas fa-plus-circle mr-3"></i> Add New Expense
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2">
+                    <label for="expense-name" class="block text-sm font-medium text-gray-700 mb-2">Expense Name</label>
+                    <input type="text" id="expense-name" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border" placeholder="Flight tickets">
+                </div>
+                
+                <div>
+                    <label for="expense-amount" class="block text-sm font-medium text-gray-700 mb-2">Amount (₹)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-rupee-sign text-gray-400"></i>
+                        </div>
+                        <input type="number" id="expense-amount" class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border" placeholder="5000">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="expense-category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select id="expense-category" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border">
+                        <option value="transport">Transport</option>
+                        <option value="accommodation">Accommodation</option>
+                        <option value="food">Food & Dining</option>
+                        <option value="activities">Activities</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="add-expense-btn" class="mt-6 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center">
+                <i class="fas fa-plus mr-2"></i> Add Expense
+            </button>
+        </section>
+        
+        <!-- Expense breakdown -->
+        <section id="expense-breakdown" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-800 flex items-center">
+                <i class="fas fa-list-ul mr-3"></i> Expense Breakdown
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Transport card -->
+                <div class="bg-white p-6 rounded-xl shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-plane text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Transport</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-blue-600 mb-2">₹<span id="transport-total">0</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="transport-progress" class="progress-bar h-2 rounded-full bg-blue-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Accommodation card -->
+                <div class="bg-white p-6 rounded-xl shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-hotel text-indigo-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Accommodation</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-indigo-600 mb-2">₹<span id="accommodation-total">0</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="accommodation-progress" class="progress-bar h-2 rounded-full bg-indigo-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Food card -->
+                <div class="bg-white p-6 rounded-xl shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-green-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-utensils text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Food & Dining</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-green-600 mb-2">₹<span id="food-total">0</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="food-progress" class="progress-bar h-2 rounded-full bg-green-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Activities card -->
+                <div class="bg-white p-6 rounded-xl shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-ticket-alt text-yellow-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Activities</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-yellow-600 mb-2">₹<span id="activities-total">0</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="activities-progress" class="progress-bar h-2 rounded-full bg-yellow-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Shopping card -->
+                <div class="bg-white p-6 rounded-xl shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-purple-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-shopping-bag text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Shopping</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-purple-600 mb-2">₹<span id="shopping-total">0</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="shopping-progress" class="progress-bar h-2 rounded-full bg-purple-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Other card -->
+                <div class="bg-white p-6 rounded-xl shadow-md expense-card">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gray-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-ellipsis-h text-gray-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700">Other</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-600 mb-2">₹<span id="other-total">0</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="other-progress" class="progress-bar h-2 rounded-full bg-gray-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Expense list -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-6 text-blue-800 flex items-center">
+                <i class="fas fa-receipt mr-3"></i> Your Expenses
+            </h2>
+            
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-list" class="bg-white divide-y divide-gray-200">
+                            <!-- Expenses will be added here dynamically -->
+                            <tr id="no-expenses" class="text-center">
+                                <td colspan="5" class="px-6 py-4 text-gray-500">No expenses added yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold mb-2">Vacation Budget Tracker</h3>
+                    <p class="text-gray-400">Plan your perfect trip with financial peace of mind</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="fab fa-facebook-f text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+                <p>© 2023 Vacation Budget Tracker. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let totalBudget = 0;
+        let tripDuration = 0;
+        let expenses = [];
+        
+        // DOM elements
+        const setBudgetBtn = document.getElementById('set-budget-btn');
+        const addExpenseBtn = document.getElementById('add-expense-btn');
+        const expenseList = document.getElementById('expense-list');
+        const noExpensesRow = document.getElementById('no-expenses');
+        const navbar = document.querySelector('.navbar');
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved data from localStorage if available
+            const savedData = localStorage.getItem('vacationBudgetTracker');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                totalBudget = data.totalBudget || 0;
+                tripDuration = data.tripDuration || 0;
+                expenses = data.expenses || [];
+                
+                // Update UI with saved data
+                updateBudgetUI();
+                updateExpenseList();
+                updateCategoryTotals();
+            }
+            
+            // Set up event listeners
+            setBudgetBtn.addEventListener('click', setBudget);
+            addExpenseBtn.addEventListener('click', addExpense);
+            
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        });
+        
+        // Set the total budget and trip duration
+        function setBudget() {
+            const budgetInput = document.getElementById('trip-budget');
+            const durationInput = document.getElementById('trip-duration');
+            
+            totalBudget = parseFloat(budgetInput.value) || 0;
+            tripDuration = parseInt(durationInput.value) || 0;
+            
+            if (totalBudget <= 0) {
+                alert('Please enter a valid budget amount');
+                return;
+            }
+            
+            // Update UI
+            updateBudgetUI();
+            
+            // Save to localStorage
+            saveData();
+            
+            // Show success message
+            showToast('Budget set successfully!', 'success');
+        }
+        
+        // Add a new expense
+        function addExpense() {
+            if (totalBudget <= 0) {
+                alert('Please set your budget first');
+                return;
+            }
+            
+            const nameInput = document.getElementById('expense-name');
+            const amountInput = document.getElementById('expense-amount');
+            const categoryInput = document.getElementById('expense-category');
+            
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value) || 0;
+            const category = categoryInput.value;
+            
+            if (!name) {
+                alert('Please enter an expense name');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Create new expense object
+            const newExpense = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString(),
+                name,
+                category,
+                amount
+            };
+            
+            // Add to expenses array
+            expenses.push(newExpense);
+            
+            // Clear form inputs
+            nameInput.value = '';
+            amountInput.value = '';
+            categoryInput.value = 'transport';
+            
+            // Update UI
+            updateBudgetUI();
+            updateExpenseList();
+            updateCategoryTotals();
+            
+            // Save to localStorage
+            saveData();
+            
+            // Show success message
+            showToast('Expense added successfully!', 'success');
+        }
+        
+        // Delete an expense
+        function deleteExpense(id) {
+            expenses = expenses.filter(expense => expense.id !== id);
+            
+            // Update UI
+            updateBudgetUI();
+            updateExpenseList();
+            updateCategoryTotals();
+            
+            // Save to localStorage
+            saveData();
+            
+            // Show success message
+            showToast('Expense deleted successfully!', 'success');
+        }
+        
+        // Update the budget summary UI
+        function updateBudgetUI() {
+            const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const remainingBudget = totalBudget - totalSpent;
+            const budgetPercentage = totalBudget > 0 ? Math.min(100, (totalSpent / totalBudget) * 100) : 0;
+            
+            // Update DOM elements
+            document.getElementById('total-budget').textContent = totalBudget.toFixed(2);
+            document.getElementById('total-spent').textContent = totalSpent.toFixed(2);
+            document.getElementById('remaining-budget').textContent = remainingBudget.toFixed(2);
+            document.getElementById('budget-percentage').textContent = budgetPercentage.toFixed(1);
+            
+            // Update progress bar
+            const progressBar = document.getElementById('budget-progress');
+            progressBar.style.width = `${budgetPercentage}%`;
+            
+            // Change color based on percentage
+            if (budgetPercentage > 80) {
+                progressBar.className = 'progress-bar h-4 rounded-full bg-gradient-to-r from-red-500 to-yellow-500';
+            } else if (budgetPercentage > 50) {
+                progressBar.className = 'progress-bar h-4 rounded-full bg-gradient-to-r from-yellow-500 to-green-500';
+            } else {
+                progressBar.className = 'progress-bar h-4 rounded-full bg-gradient-to-r from-blue-500 to-green-500';
+            }
+        }
+        
+        // Update the expense list UI
+        function updateExpenseList() {
+            if (expenses.length === 0) {
+                noExpensesRow.style.display = 'table-row';
+                expenseList.innerHTML = '';
+                expenseList.appendChild(noExpensesRow);
+                return;
+            }
+            
+            noExpensesRow.style.display = 'none';
+            
+            // Clear existing rows
+            expenseList.innerHTML = '';
+            
+            // Add each expense as a row
+            expenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.className = 'fade-in';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${expense.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${getCategoryColorClass(expense.category)}">
+                            ${capitalizeFirstLetter(expense.category)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">₹${expense.amount.toFixed(2)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="deleteExpense(${expense.id})" class="text-red-600 hover:text-red-900">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                expenseList.appendChild(row);
+            });
+        }
+        
+        // Update the category totals UI
+        function updateCategoryTotals() {
+            const categories = {
+                transport: { total: 0, element: 'transport-total', progress: 'transport-progress' },
+                accommodation: { total: 0, element: 'accommodation-total', progress: 'accommodation-progress' },
+                food: { total: 0, element: 'food-total', progress: 'food-progress' },
+                activities: { total: 0, element: 'activities-total', progress: 'activities-progress' },
+                shopping: { total: 0, element: 'shopping-total', progress: 'shopping-progress' },
+                other: { total: 0, element: 'other-total', progress: 'other-progress' }
+            };
+            
+            // Calculate totals for each category
+            expenses.forEach(expense => {
+                if (categories[expense.category]) {
+                    categories[expense.category].total += expense.amount;
+                }
+            });
+            
+            // Update UI for each category
+            for (const category in categories) {
+                const total = categories[category].total;
+                const percentage = totalBudget > 0 ? Math.min(100, (total / totalBudget) * 100) : 0;
+                
+                document.getElementById(categories[category].element).textContent = total.toFixed(2);
+                document.getElementById(categories[category].progress).style.width = `${percentage}%`;
+            }
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            const data = {
+                totalBudget,
+                tripDuration,
+                expenses
+            };
+            localStorage.setItem('vacationBudgetTracker', JSON.stringify(data));
+        }
+        
+        // Helper function to get color class for category
+        function getCategoryColorClass(category) {
+            switch (category) {
+                case 'transport': return 'bg-blue-100 text-blue-800';
+                case 'accommodation': return 'bg-indigo-100 text-indigo-800';
+                case 'food': return 'bg-green-100 text-green-800';
+                case 'activities': return 'bg-yellow-100 text-yellow-800';
+                case 'shopping': return 'bg-purple-100 text-purple-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+        
+        // Helper function to capitalize first letter
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        // Show toast notification
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-md text-white font-medium 
+                ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} fade-in`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('fade-in');
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
