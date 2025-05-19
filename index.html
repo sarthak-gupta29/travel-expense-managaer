@@ -441,7 +441,7 @@
                 const sectionTop = section.getBoundingClientRect().top + window.pageYOffset; // Get section's top position
                 const bodyPaddingTop = parseFloat(getComputedStyle(document.body).paddingTop); // Get body padding-top (80px)
                 window.scrollTo({
-                    top: sectionTop - navbarHeight - bodyPaddingTop + 70, // Adjust for navbar height and body padding
+                    top: sectionTop - navbarHeight - bodyPaddingTop + 40, // Adjust for navbar height and body padding
                     behavior: 'smooth'
                 });
             }
